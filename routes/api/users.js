@@ -3,7 +3,9 @@ const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 const Gravator = require('gravatar');
-const Bcryptjs = require('bcryptjs')
+const Bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 // @route   GET api/users
 //@desc     Test route
@@ -14,13 +16,14 @@ router.get('/api/users', (req, res) => {
     res.send('User route');
 });
 
+
 router.post('/api/users/', [
     check('name').not().isEmpty(),
     check('email').isEmail(),
     check('password').isLength({ min: 5 })
 ],
     async (req, res) => {
-        
+
         const error = validationResult(req);
         if (!error.isEmpty()) {
             await res.status(400).json({ errors: error.array() })
@@ -38,7 +41,7 @@ router.post('/api/users/', [
 
             //Get users gravtar
             let avatar = Gravator.url(email, { s: '200', r: 'pg', d: '404' });
-            
+
             //create new User
             user = new User({
                 name,
@@ -46,20 +49,40 @@ router.post('/api/users/', [
                 avatar,
                 password
             })
-            
+
             //Encrpt Password
             let salt = await Bcryptjs.genSalt(10);
             user.password = await Bcryptjs.hash(password, salt);
-            
+
             //Save User
             await user.save();
-          
+            //res.send("User registered");
+
             //return jsonwebtoken
+            const payLoad = {
+                user: {
+                    id: user.id,
+                    email: user.email
+                }
+            }
+
+            jwt.sign(
+                payLoad,
+                config.get('jwtToken'),
+                { expiresIn: 360000 },
+                (err, token) => {
+                    if (err)
+                        throw err;
+
+                    res.json({ token });
+                }
+            );
 
             //res.send(req.body);
-            res.send("User registered");
-        } catch (error) {
 
+        } catch (error) {
+            console.log("Server error")
+            res.send("Server Error");
         }
     })
 
