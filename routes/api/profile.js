@@ -33,12 +33,14 @@ router.get('/api/profile/me', auth, async (req, res) => {
 //@desc     Save route
 //@access   Public
 
-router.post('/api/profile/', [auth,
+router.post('/api/profile/',
     [
-        check('status', 'Status is required').not().isEmpty(),
-        check('skills', 'Skills Required').not().isEmpty()
-    ]
-],
+        auth,
+        [
+            check('status', 'Status is required').not().isEmpty(),
+            check('skills', 'Skills Required').not().isEmpty()
+        ]
+    ],
     async (req, res) => {
 
         const error = validationResult(req);
@@ -48,7 +50,7 @@ router.post('/api/profile/', [auth,
 
         const { company, website, location, status, skills, bio, githubusername, youtube, twitter, facebook, linkedin, instagram } = req.body;
 
-        // const ProfileFields = {};
+        const ProfileFields = { user: req.user.id, company, website, location, status, skills, bio, githubusername };
         // ProfileFields.user = req.user.id
         // if (company) (ProfileFields.company) = company;
         // if (website) (ProfileFields.website) = website;
@@ -58,23 +60,23 @@ router.post('/api/profile/', [auth,
         // if (bio) (ProfileFields.bio) = bio;
         // if (githubusername) (ProfileFields.githubusername) = githubusername;
 
-        // ProfileFields.social = {};
+        ProfileFields.social = { youtube, twitter, facebook, linkedin, instagram };
         // if (youtube) (ProfileFields.social.youtube) = youtube;
         // if (twitter) (ProfileFields.social.twitter) = twitter;
         // if (facebook) (ProfileFields.social.facebook) = facebook;
         // if (linkedin) (ProfileFields.social.linkedin) = linkedin;
         // if (instagram) (ProfileFields.social.instagram) = instagram;
 
-        //console.log(ProfileFields);
+
         try {
             let isProfile = await Profile.findOne({ user: req.user.id });
 
-            console.log(isProfile)
             if (isProfile) {
-                let update = await Profile.findOneAndUpdate({ user: req.user.id },
+                let update = await Profile.findOneAndUpdate(
+                    { user: req.user.id },
                     {
-                        //$set:  ProfileFields
-                        $set: { company, website, location, status, skills, bio, githubusername, youtube, twitter, facebook, linkedin, instagram }
+                        $set: ProfileFields
+                        // $set: { company, website, location, status, skills, bio, githubusername, youtube, twitter, facebook, linkedin, instagram }
                     },
                     { new: true }
                 )
@@ -82,8 +84,8 @@ router.post('/api/profile/', [auth,
                 return res.send("Profile Updated");
             }
             else {
-                //let profile = new Profile( ProfileFields);
-                let profile = new Profile({ company, website, location, status, skills, bio, githubusername, youtube, twitter, facebook, linkedin, instagram });
+                let profile = new Profile(ProfileFields);
+                // let profile = new Profile({ company, website, location, status, skills, bio, githubusername, youtube, twitter, facebook, linkedin, instagram });
 
                 await profile.save();
 
@@ -94,7 +96,20 @@ router.post('/api/profile/', [auth,
             res.status(400).json({ error: "Something Went Wrong" })
         }
     }
-)
+);
+
+//@route   GET api/profile/me
+//@desc     Get All Profiles
+//@access   Public
+
+router.get('/api/profile/all', auth, async (req, res) => {
+    try {
+        let lstProfile = await Profile.find().populate('user', ['name', 'avatar']);
+        res.send(lstProfile);
+    } catch (error) {
+        res.status(400, json({ error: error.array() }));
+    }
+})
 
 
 module.exports = router;
