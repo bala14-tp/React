@@ -107,7 +107,87 @@ router.get('/api/profile/all', auth, async (req, res) => {
         let lstProfile = await Profile.find().populate('user', ['name', 'avatar']);
         res.send(lstProfile);
     } catch (error) {
-        res.status(400, json({ error: error.array() }));
+        res.status(400).json({ error: "Something Went Wrong" })
+    }
+})
+
+router.get('/api/profile/:pid', auth, async (req, res) => {
+    try {
+
+        //let profile = await Profile.findOne({ user: req.params.pid })
+        let profile = await Profile.findById({ _id: req.params.pid });
+
+        res.send(profile);
+    } catch (error) {
+        res.status(400).json({ error: "Something Went Wrong" })
+    }
+})
+
+router.delete('/api/profile/delete', auth, async (req, res) => {
+    try {
+        let msg;
+
+        await Profile.deleteOne({ user: req.user.id });
+        msg = "Profile Deleted";
+
+        await User.delete({ _id: req.user.id });
+        res.send(`${msg} User Deleted`);
+
+    } catch (error) {
+        res.status(400).json({ error: "Something Went Wrong" })
+    }
+})
+
+//@route   Update api/profile/me
+//@desc     Update Experiance Profiles
+//@access   Public
+
+router.put('/api/profile/exp',
+    [
+        auth,
+        [
+            check('title', 'Please Enter Title').not().isEmpty(),
+            check('company', 'Please Enter Title').not().isEmpty(),
+            check('_from', 'Please enter from date').not().isEmpty(),
+            check('current', 'please enter currency').isBoolean()
+        ]
+    ], async (req, res) => {
+        try {
+
+            const error = validationResult(req);
+            if (!error.isEmpty()) {
+                await res.status('400').json({ errors: error.array() });
+            }
+
+            const { title, company, location, to, _from, description } = req.body;
+            let ss = { title, company, location, to, _from, description };
+
+            let profile = await Profile.findOne({ user: req.user.id });
+            profile.experiance.unshift(ss);
+
+
+            await profile.save();
+
+            res.send("Experiance Updated");
+        } catch (err) {
+            res.status(400).json({ error: "Something went wrong" });
+        }
+    })
+
+router.delete('/api/profile/expDelete/:delID', auth, async (req, res) => {
+    try {
+
+        const profile = await Profile.findOne({ user: req.user.id });
+
+        const expIndex = profile.experiance.map(x => x.id).indexOf(req.params.delID);
+
+        profile.experiance.splice(expIndex, 1);
+
+        await profile.save();
+
+        res.send("Experiance deleted!");
+    } catch (error) {
+        res.send("Something went wrong");
     }
 })
 
