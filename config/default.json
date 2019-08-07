@@ -1,4 +1,6 @@
 {
-    "mongoURI" : "mongodb+srv://bala:shadows14@cluster0-br5ht.mongodb.net/test?retryWrites=true&w=majority",
-    "jwtToken" : "jwtSecreatToken"
+    "mongoURI": "mongodb+srv://bala:shadows14@cluster0-br5ht.mongodb.net/test?retryWrites=true&w=majority",
+    "jwtToken": "jwtSecreatToken",
+    "GitClientID": "96e7ebdd3f1ae452a2a3",
+    "GitClientSecret": "27bc95678ec6d5940725cf9767ff170020392cd4"
 }

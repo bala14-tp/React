@@ -4,6 +4,8 @@ const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const config = require('config');
+const request = require('request');
 
 
 // @route   GET api/profile/me
@@ -190,6 +192,31 @@ router.delete('/api/profile/expDelete/:delID', auth, async (req, res) => {
         res.send("Something went wrong");
     }
 })
+
+router.get('/api/profile/github/:username', async (req, res) => {
+    try {
+        const options = {
+            uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc&client_id=${config.get('GitClientID')}&client_secret=${config.get('GitClientSecret')}`,
+            method: 'GET',
+            headers: { 'user-agent': 'node.js' }
+        }
+
+        request(options, (error, response, body) => {
+
+            if (error)
+                console.log(error)
+
+            if (response.statusCode !== 200)
+                res.status(404).json({ msg: 'No git hub Profile found' });
+
+
+            res.send(JSON.parse(body));
+        })
+    } catch (error) {
+        res.send('Something Went Wrong');
+    }
+
+});
 
 
 module.exports = router;
