@@ -3,14 +3,16 @@ const connectDB = require('./config/db');
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
+const cors = require('cors');
 
 const app = express();
 
 //Init Middleware
-app.use(express.json({ extends: false}));
+app.use(express.json({ extends: false }));
 
 connectDB();
 
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use('/', users);
 app.use('/', require('./routes/api/auth'));
 app.use('/', profile);

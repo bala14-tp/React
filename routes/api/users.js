@@ -18,9 +18,9 @@ router.get('/api/users', (req, res) => {
 
 
 router.post('/api/users/', [
-    check('name').not().isEmpty(),
-    check('email').isEmail(),
-    check('password').isLength({ min: 5 })
+    check('name','Please Enter Valid name').not().isEmpty(),
+    check('email','Please Enter Email').isEmail(),
+    check('password','Please Enter Password').isLength({ min: 5 })
 ],
     async (req, res) => {
 
