@@ -36,7 +36,7 @@ router.post('/api/users/', [
             //see if user exits
             let Isuser = await User.findOne({ email });
             if (Isuser) {
-               return res.status(400).json({ error: "Email already exists" });
+               return res.status(400).json({ errors: "Email already exists" });
             }
 
             //Get users gravtar
