@@ -40,21 +40,25 @@ router.post('/api/auth/', [
         try {
             const { email, password } = req.body;
             //see if user exits
+
             let Isuser = await User.findOne({ email });
+
             if (!Isuser) {
-                return res.status(400).json({ error: "Invalid Credential" });
+                return res.status(400).json({ errors: [{ msg: "Invalid Credential" }] });
             }
 
             const isMatch = await Bcryptjs.compare(password, Isuser.password);
+
             if (!isMatch) {
-                return res.status(400).json({ error: "Invalid Credential" });
+                return res.status(400).json({ errors: [{ msg: "Invalid Credential" }] });
             }
 
+            //console.log(user)
             //return jsonwebtoken
             const payLoad = {
                 user: {
-                    id: user.id,
-                    email: user.email
+                    id: Isuser.id,
+                    email: Isuser.email
                 }
             }
 
