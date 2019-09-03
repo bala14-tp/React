@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
-import { REGISTER_SUCESS, REGISTER_FAIL, USER_LOADED, AUTH_ERROR, LOGIN_SUCESS, LOGIN_FAIL } from './type';
+import { REGISTER_SUCESS, REGISTER_FAIL, USER_LOADED, AUTH_ERROR, LOGIN_SUCESS, LOGIN_FAIL, LOGOUT } from './type';
 import setAuthToken from '../utils/setAuthToken';
 
 
@@ -86,7 +86,7 @@ export const loginUser = ({ email, password }) => async dispatch => {
         })
 
         dispatch(loadUser());
-        dispatch(setAlert("User succesfully logined","success"));
+        dispatch(setAlert("User succesfully logined", "success"));
     } catch (err) {
 
         const errors = err.response.data.errors;
@@ -100,4 +100,10 @@ export const loginUser = ({ email, password }) => async dispatch => {
             type: LOGIN_FAIL
         })
     }
+}
+
+//LogOut /Clear Profile
+
+export const logout = () => dispatch => {
+    dispatch({ type: LOGOUT })
 }
