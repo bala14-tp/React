@@ -1,8 +1,5 @@
 import axios from 'axios';
-import {
-    GET_PROFILE,
-    PROFILE_ERROR
-} from './type';
+import {GET_PROFILE,PROFILE_ERROR} from './type';
 import { setAlert } from './alert';
 
 export const getCurrentProfile = () => async dispacth => {
@@ -20,7 +17,7 @@ export const getCurrentProfile = () => async dispacth => {
             payload: { msg: err.response.data.msg, status: err.response.status }
         })
 
-        console.log((err.response))
+        //console.log((err.response))
         dispacth(setAlert(err.response.data.msg, 'danger'));
     }
 }
