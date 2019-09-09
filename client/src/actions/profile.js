@@ -39,6 +39,12 @@ export const createProfile = (formData, history, edit = false) => async dispacth
         dispacth(setAlert((edit ? "Profile Updated" : "Profile Saved"), "success"));
 
     } catch (err) {
+
+        dispacth({
+            type: PROFILE_ERROR,
+            payload: { msg: err.response.data.msg, status: err.response.status }
+        });
+
         const errors = err.response.data.errors;
 
         if (errors) {
