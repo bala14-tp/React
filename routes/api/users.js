@@ -16,7 +16,7 @@ router.get('/api/users', (req, res) => {
     res.send('User route');
 });
 
-
+//New User
 router.post('/api/users/', [
     check('name','Please Enter Valid name').not().isEmpty(),
     check('email','Please Enter Email').isEmail(),

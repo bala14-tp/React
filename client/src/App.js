@@ -17,9 +17,6 @@ import EditProfile from './component/profile-forms/EditProfile';
 import { Provider } from 'react-redux';
 import store from './store';
 
-
-
-
 const App = () => {
 
   if (localStorage.token) {

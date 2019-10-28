@@ -24,6 +24,7 @@ router.get('/api/auth', authToken, async (req, res) => {
     }
 });
 
+//Login
 router.post('/api/auth/', [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists()
